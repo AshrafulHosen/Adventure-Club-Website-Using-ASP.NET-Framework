@@ -1,0 +1,321 @@
+<%@ Master Language="C#" AutoEventWireup="true"
+CodeBehind="Site.master.cs"
+Inherits="AdventureHorizonsBD.SiteMaster" %>
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head runat="server">
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+    <title>
+        <asp:ContentPlaceHolder
+            ID="TitleContent"
+            runat="server">
+        </asp:ContentPlaceHolder>
+    </title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap"
+          rel="stylesheet" />
+
+    <link href="~/CSS/styles.css"
+          rel="stylesheet"
+          runat="server" />
+
+</head>
+
+<body>
+
+<form id="form1" runat="server" enctype="multipart/form-data">
+
+<header class="site-header">
+
+    <div class="container nav-wrap">
+
+        <asp:HyperLink
+            ID="lnkLogo"
+            runat="server"
+            CssClass="brand"
+            NavigateUrl="~/Default.aspx">
+
+            <span>
+                Adventure Horizons BD
+            </span>
+
+        </asp:HyperLink>
+
+        <button class="menu-toggle"
+                type="button"
+                aria-label="Toggle menu">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </button>
+
+        <nav aria-label="Main Navigation">
+
+            <ul class="nav-list">
+
+                <li>
+                    <asp:HyperLink
+                        runat="server"
+                        NavigateUrl="~/Default.aspx"
+                        Text="Home" />
+                </li>
+
+                <li>
+                    <asp:HyperLink
+                        runat="server"
+                        NavigateUrl="~/About.aspx"
+                        Text="About" />
+                </li>
+
+                <li>
+                    <asp:HyperLink
+                        runat="server"
+                        NavigateUrl="~/Regions.aspx"
+                        Text="Regions" />
+                </li>
+
+                <li>
+                    <asp:HyperLink
+                        runat="server"
+                        NavigateUrl="~/Events.aspx"
+                        Text="Events" />
+                </li>
+
+                <li>
+                    <asp:HyperLink
+                        runat="server"
+                        NavigateUrl="~/Gallery.aspx"
+                        Text="Gallery" />
+                </li>
+
+                <li>
+                    <asp:HyperLink
+                        runat="server"
+                        NavigateUrl="~/Membership.aspx"
+                        Text="Membership" />
+                </li>
+
+                <li>
+                    <asp:HyperLink
+                        runat="server"
+                        NavigateUrl="~/Contact.aspx"
+                        Text="Contact" />
+                </li>
+
+                <li>
+                    <asp:HyperLink
+                        runat="server"
+                        NavigateUrl="~/User.aspx"
+                        Text="👤 Dashboard"
+                        Style="color: var(--accent);" />
+                </li>
+
+                <li>
+                    <asp:HyperLink
+                        runat="server"
+                        NavigateUrl="~/Admin.aspx"
+                        Text="🔐 Admin"
+                        Style="color: var(--primary);" />
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+</header>
+
+<asp:ContentPlaceHolder
+    ID="MainContent"
+    runat="server">
+</asp:ContentPlaceHolder>
+
+<footer class="site-footer">
+
+<div class="container">
+
+<div class="footer-grid">
+
+<section class="footer-column">
+
+<h3 style="color: var(--primary);">
+Adventure Horizons BD
+</h3>
+
+<p>
+Uniting adventurers across Bangladesh
+to explore rivers, coasts, hills,
+and mountains through safe,
+eco-friendly expeditions.
+</p>
+
+<div class="social-links">
+
+<a href="#">f</a>
+<a href="#">📷</a>
+<a href="#">𝕏</a>
+<a href="#">▶</a>
+
+</div>
+
+</section>
+
+<section class="footer-column">
+
+<h3>Quick Links</h3>
+
+<ul>
+
+<li>
+<a href="Default.aspx">Home</a>
+</li>
+
+<li>
+<a href="About.aspx">About Us</a>
+</li>
+
+<li>
+<a href="Regions.aspx">Explore Regions</a>
+</li>
+
+<li>
+<a href="Events.aspx">Upcoming Trips</a>
+</li>
+
+<li>
+<a href="Membership.aspx">Membership</a>
+</li>
+
+</ul>
+
+</section>
+
+<section class="footer-column">
+
+<h3>Popular Regions</h3>
+
+<ul>
+
+<li>
+<a href="Regions.aspx">
+Sylhet Tea Gardens
+</a>
+</li>
+
+<li>
+<a href="Regions.aspx">
+Cox's Bazar Beaches
+</a>
+</li>
+
+<li>
+<a href="Regions.aspx">
+Sundarbans Mangroves
+</a>
+</li>
+
+<li>
+<a href="Regions.aspx">
+Chittagong Hills
+</a>
+</li>
+
+<li>
+<a href="Regions.aspx">
+River Expeditions
+</a>
+</li>
+
+</ul>
+
+</section>
+
+<section class="footer-column">
+
+<h3>
+Contact & Support
+</h3>
+
+<p>
+<strong>Email:</strong><br />
+hello@adventurehorizonsbd.com
+</p>
+
+<p>
+<strong>Phone:</strong><br />
++880 1880-123456
+</p>
+
+<p>
+<strong>Office:</strong><br />
+Dhaka, Bangladesh
+</p>
+
+</section>
+
+</div>
+
+<div class="footer-bottom">
+
+<p>
+© 2026 Adventure Horizons BD.
+All rights reserved.
+</p>
+
+<p>
+
+<a href="#">
+Privacy Policy
+</a>
+
+|
+
+<a href="#">
+Terms of Service
+</a>
+
+|
+
+<a href="#">
+Safety Guidelines
+</a>
+
+</p>
+
+</div>
+
+</div>
+
+</footer>
+
+<button id="scrollToTop"
+        type="button"
+        aria-label="Scroll To Top">
+
+↑
+
+</button>
+
+<script src="JS/main.js"></script>
+
+</form>
+
+</body>
+</html>
