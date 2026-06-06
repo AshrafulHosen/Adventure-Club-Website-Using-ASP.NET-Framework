@@ -190,5 +190,50 @@ namespace AdventureHorizonsBD.DAL
                 cmd.ExecuteNonQuery();
             }
         }
+
+        public EventModel GetEventById(int eventId)
+        {
+            using (SqlConnection conn = DatabaseHelper.GetConnection())
+            {
+                string sql = "SELECT * FROM Events WHERE EventID = @EventID";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@EventID", eventId);
+                conn.Open();
+                using (SqlDataReader r = cmd.ExecuteReader())
+                {
+                    if (r.Read())
+                        return new EventModel
+                        {
+                            EventID       = Convert.ToInt32(r["EventID"]),
+                            Title         = r["Title"].ToString(),
+                            EventDate     = r["EventDate"].ToString(),
+                            EventDuration = r["EventDuration"].ToString(),
+                            Region        = r["Region"].ToString(),
+                            Description   = r["Description"].ToString()
+                        };
+                }
+            }
+            return null;
+        }
+
+        public void UpdateEvent(EventModel evt)
+        {
+            using (SqlConnection conn = DatabaseHelper.GetConnection())
+            {
+                string sql = @"UPDATE Events SET Title=@Title, EventDate=@EventDate,
+                    EventDuration=@EventDuration, Region=@Region, Description=@Description
+                    WHERE EventID=@EventID";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Title",         evt.Title);
+                cmd.Parameters.AddWithValue("@EventDate",     evt.EventDate);
+                cmd.Parameters.AddWithValue("@EventDuration", evt.EventDuration);
+                cmd.Parameters.AddWithValue("@Region",        evt.Region);
+                cmd.Parameters.AddWithValue("@Description",   evt.Description);
+                cmd.Parameters.AddWithValue("@EventID",       evt.EventID);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
     }
 }

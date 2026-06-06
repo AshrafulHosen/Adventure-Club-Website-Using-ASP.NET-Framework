@@ -1,56 +1,51 @@
-// ADMIN PANEL - CLIENT-SIDE TAB SWITCHING ONLY
-// All login, form submission, and data management is handled server-side by ASP.NET
+// ADMIN PANEL — tab switching and upload method toggle
+// Tab state is stored in hdnActiveAdminTab (a server HiddenField with ViewState)
+// so it survives full-page postbacks.
 
-// ===== TAB SWITCHING =====
 function switchAdminTab(tabName) {
-    // Hide all tab content sections
-    var tabs = document.querySelectorAll('.admin-tab-content');
-    for (var i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-    }
+    document.querySelectorAll('.admin-tab-content').forEach(function(el) {
+        el.classList.remove('active');
+    });
+    document.querySelectorAll('.admin-nav-item').forEach(function(el) {
+        el.classList.remove('active');
+    });
 
-    // Remove active class from all nav items
-    var navItems = document.querySelectorAll('.admin-nav-item');
-    for (var i = 0; i < navItems.length; i++) {
-        navItems[i].classList.remove('active');
-    }
+    var section = document.getElementById(tabName);
+    if (section) section.classList.add('active');
 
-    // Show the selected tab
-    var targetTab = document.getElementById(tabName);
-    if (targetTab) {
-        targetTab.classList.add('active');
-    }
-
-    // Highlight the clicked nav item
-    if (event && event.target) {
-        var clicked = event.target.closest('.admin-nav-item');
-        if (clicked) {
-            clicked.classList.add('active');
+    // Highlight matching nav button by its onclick text
+    document.querySelectorAll('.admin-nav-item').forEach(function(btn) {
+        var oc = btn.getAttribute('onclick') || '';
+        if (oc.indexOf("'" + tabName + "'") !== -1) {
+            btn.classList.add('active');
         }
-    }
+    });
+
+    // Persist in the ViewState-backed hidden field
+    var hdn = document.getElementById('hdnActiveAdminTab');
+    if (hdn) hdn.value = tabName;
 }
 
-// ===== GALLERY UPLOAD METHOD SWITCHING =====
 function switchUploadMethod(method) {
     var fileMethod = document.getElementById('fileUploadMethod');
-    var urlMethod = document.getElementById('urlUploadMethod');
-    var buttons = document.querySelectorAll('.upload-method-btn');
-
-    // Remove active class from all buttons
-    for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove('active');
-    }
-
-    // Add active class to clicked button
-    if (event && event.target) {
-        event.target.classList.add('active');
-    }
-
+    var urlMethod  = document.getElementById('urlUploadMethod');
+    document.querySelectorAll('.upload-method-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    if (event && event.target) event.target.classList.add('active');
     if (method === 'file') {
         if (fileMethod) fileMethod.classList.add('active');
-        if (urlMethod) urlMethod.classList.remove('active');
+        if (urlMethod)  urlMethod.classList.remove('active');
     } else {
         if (fileMethod) fileMethod.classList.remove('active');
-        if (urlMethod) urlMethod.classList.add('active');
+        if (urlMethod)  urlMethod.classList.add('active');
     }
 }
+
+// Restore active tab on page load (after postback). Runs after DOM is ready.
+(function restoreTab() {
+    var hdn = document.getElementById('hdnActiveAdminTab');
+    var tab = hdn ? hdn.value : 'overview';
+    if (!tab) tab = 'overview';
+    switchAdminTab(tab);
+})();

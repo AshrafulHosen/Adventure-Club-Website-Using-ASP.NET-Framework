@@ -111,6 +111,22 @@ BEGIN
 END
 GO
 
+
+-- 8. Reviews Table
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Reviews')
+BEGIN
+    CREATE TABLE Reviews (
+        ReviewID   INT IDENTITY(1,1) PRIMARY KEY,
+        UserID     INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
+        EventName  NVARCHAR(200) NOT NULL,
+        Title      NVARCHAR(200) NOT NULL,
+        ReviewText NVARCHAR(MAX) NOT NULL,
+        Rating     INT NOT NULL CHECK (Rating BETWEEN 1 AND 5),
+        IsApproved BIT DEFAULT 0,
+        ReviewDate DATETIME DEFAULT GETDATE()
+    );
+END
+GO
 -- ==============================================
 -- SEED DATA
 -- ==============================================

@@ -1,5 +1,5 @@
 <%@ Page Language="C#" MasterPageFile="~/MasterPages/Site.master" AutoEventWireup="true" CodeBehind="User.aspx.cs"
-    Inherits="AdventureHorizonsBD.User" %>
+    Inherits="AdventureHorizonsBD.User" EnableEventValidation="false" %>
 
     <asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
 
@@ -54,7 +54,7 @@
             </asp:Panel>
 
             <!-- User Dashboard -->
-            <asp:Panel ID="pnlUserDashboard" runat="server" Visible="false" CssClass="user-dashboard">
+            <asp:Panel ID="pnlUserDashboard" runat="server" CssClass="user-dashboard">
 
                 <div class="user-nav">
 
@@ -158,7 +158,8 @@
                                     </asp:Label>
 
                                     <asp:Button ID="btnUserUploadPhoto" runat="server" Text="Upload Photo"
-                                        CssClass="btn btn-primary" OnClick="btnUserUploadPhoto_Click" />
+                                        CssClass="btn btn-primary" OnClick="btnUserUploadPhoto_Click"
+                                        UseSubmitBehavior="true" />
 
                                 </asp:Panel>
 
@@ -182,17 +183,17 @@
 
                             <div class="form-group">
                                 <label>Event Name:</label>
-                                <asp:TextBox ID="txtReviewEvent" runat="server" placeholder="Event Name" required="required"></asp:TextBox>
+                                <asp:TextBox ID="txtReviewEvent" runat="server" placeholder="Event Name"></asp:TextBox>
                             </div>
 
                             <div class="form-group">
                                 <label>Review Title:</label>
-                                <asp:TextBox ID="txtReviewTitle" runat="server" placeholder="Review Title" required="required"></asp:TextBox>
+                                <asp:TextBox ID="txtReviewTitle" runat="server" placeholder="Review Title"></asp:TextBox>
                             </div>
 
                             <div class="form-group">
                                 <label>Your Review:</label>
-                                <asp:TextBox ID="txtReviewText" runat="server" TextMode="MultiLine" Rows="5" required="required"></asp:TextBox>
+                                <asp:TextBox ID="txtReviewText" runat="server" TextMode="MultiLine" Rows="5"></asp:TextBox>
                             </div>
 
                             <asp:HiddenField ID="hdnReviewRating" runat="server" Value="5" ClientIDMode="Static" />
@@ -343,6 +344,8 @@
             </asp:Panel>
 
         </main>
+
+        <asp:HiddenField ID="hdnActiveUserTab" runat="server" Value="gallery" ClientIDMode="Static" />
 
         <script src="JS/user.js"></script>
 

@@ -1,5 +1,5 @@
 <%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/MasterPages/Site.master" CodeBehind="Admin.aspx.cs"
-    Inherits="AdventureHorizonsBD.Admin" %>
+    Inherits="AdventureHorizonsBD.Admin" EnableEventValidation="false" %>
 
     <asp:Content ID="TitleContent1" ContentPlaceHolderID="TitleContent" runat="server">
 
@@ -50,7 +50,7 @@
             </asp:Panel>
 
             <!-- Admin Dashboard -->
-            <asp:Panel ID="pnlAdminDashboard" runat="server" Visible="false" CssClass="admin-dashboard">
+            <asp:Panel ID="pnlAdminDashboard" runat="server" CssClass="admin-dashboard">
 
                 <!-- Navigation Tabs -->
                 <div class="admin-nav">
@@ -267,6 +267,43 @@
 
                             </div>
 
+                            <asp:Panel ID="pnlEditEvent" runat="server" Visible="false"
+                                style="background:var(--surface,#1a1a2e);border:2px solid #1565c0;border-radius:12px;padding:2rem;margin-top:1.5rem;grid-column:1/-1;">
+                                <h3 style="color:#42a5f5;margin-bottom:1.5rem;">✏️ Edit Event</h3>
+                                <asp:HiddenField ID="hdnEditEventID" runat="server" />
+                                <div class="form-group">
+                                    <label>Event Title:</label>
+                                    <asp:TextBox ID="txtEditEventTitle" runat="server"></asp:TextBox>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Date(s):</label>
+                                        <asp:TextBox ID="txtEditEventDate" runat="server"></asp:TextBox>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Duration:</label>
+                                        <asp:TextBox ID="txtEditEventDuration" runat="server"></asp:TextBox>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Region:</label>
+                                    <asp:TextBox ID="txtEditEventRegion" runat="server"></asp:TextBox>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description:</label>
+                                    <asp:TextBox ID="txtEditEventDescription" runat="server" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                                </div>
+                                <asp:Label ID="lblEditEventMsg" runat="server" Font-Bold="true"
+                                    style="display:block;margin-bottom:1rem;"></asp:Label>
+                                <div style="display:flex;gap:1rem;">
+                                    <asp:Button ID="btnSaveEvent" runat="server" Text="💾 Save Changes"
+                                        CssClass="btn btn-primary" OnClick="btnSaveEvent_Click" />
+                                    <asp:Button ID="btnCancelEditEvent" runat="server" Text="✕ Cancel"
+                                        CssClass="btn btn-sm" style="background:#555;color:white;"
+                                        OnClick="btnCancelEditEvent_Click" CausesValidation="false" />
+                                </div>
+                            </asp:Panel>
+
                             <div class="admin-list-section">
 
                                 <h3>Current Events</h3>
@@ -283,8 +320,11 @@
                                                         <p class="admin-item-meta">📍 <%# Eval("Region") %></p>
                                                     </div>
                                                     <div class="admin-item-actions">
+                                                        <asp:Button ID="btnEditEvent" runat="server" CommandName="EditEvent"
+                                                            CommandArgument='<%# Eval("EventID") %>' Text="✏️ Edit"
+                                                            CssClass="btn btn-sm" style="background:#1565c0;color:white;" />
                                                         <asp:Button ID="btnDeleteEvent" runat="server" CommandName="Delete"
-                                                            CommandArgument='<%# Eval("EventID") %>' Text="Delete"
+                                                            CommandArgument='<%# Eval("EventID") %>' Text="🗑️ Delete"
                                                             CssClass="btn btn-danger btn-sm"
                                                             OnClientClick="return confirm('Delete this event and all its registrations?');" />
                                                     </div>
@@ -368,6 +408,37 @@
 
                             </div>
 
+                            <asp:Panel ID="pnlEditImage" runat="server" Visible="false"
+                                style="background:var(--surface,#1a1a2e);border:2px solid #1565c0;border-radius:12px;padding:2rem;margin-top:1.5rem;grid-column:1/-1;">
+                                <h3 style="color:#42a5f5;margin-bottom:1.5rem;">✏️ Edit Photo</h3>
+                                <asp:HiddenField ID="hdnEditImageID" runat="server" />
+                                <asp:HiddenField ID="hdnEditImageURL" runat="server" />
+                                <div class="form-group">
+                                    <label>Photo Title:</label>
+                                    <asp:TextBox ID="txtEditImageTitle" runat="server"></asp:TextBox>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description:</label>
+                                    <asp:TextBox ID="txtEditImageDescription" runat="server" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                </div>
+                                <div class="form-group">
+                                    <label>Replace Photo (optional — leave blank to keep existing):</label>
+                                    <asp:FileUpload ID="fileEditPhoto" runat="server" accept="image/*" />
+                                    <asp:Image ID="imgEditPreview" runat="server"
+                                        style="display:block;max-width:200px;max-height:150px;margin-top:0.75rem;border-radius:6px;border:1px solid #333;"
+                                        AlternateText="Current photo" />
+                                </div>
+                                <asp:Label ID="lblEditImageMsg" runat="server" Font-Bold="true"
+                                    style="display:block;margin-bottom:1rem;"></asp:Label>
+                                <div style="display:flex;gap:1rem;">
+                                    <asp:Button ID="btnSaveImage" runat="server" Text="💾 Save Changes"
+                                        CssClass="btn btn-primary" OnClick="btnSaveImage_Click" />
+                                    <asp:Button ID="btnCancelEditImage" runat="server" Text="✕ Cancel"
+                                        CssClass="btn btn-sm" style="background:#555;color:white;"
+                                        OnClick="btnCancelEditImage_Click" CausesValidation="false" />
+                                </div>
+                            </asp:Panel>
+
                             <div class="admin-list-section">
 
                                 <h3>All Gallery Photos</h3>
@@ -390,8 +461,11 @@
                                                             CommandArgument='<%# Eval("ImageID") %>' Text="Approve"
                                                             CssClass="btn btn-success btn-sm"
                                                             Visible='<%# !Convert.ToBoolean(Eval("IsApproved")) %>' />
+                                                        <asp:Button ID="btnEditImg" runat="server" CommandName="EditImage"
+                                                            CommandArgument='<%# Eval("ImageID") %>' Text="✏️ Edit"
+                                                            CssClass="btn btn-sm" style="background:#1565c0;color:white;" />
                                                         <asp:Button ID="btnDeleteImg" runat="server" CommandName="Delete"
-                                                            CommandArgument='<%# Eval("ImageID") %>' Text="Delete"
+                                                            CommandArgument='<%# Eval("ImageID") %>' Text="🗑️ Delete"
                                                             CssClass="btn btn-danger btn-sm"
                                                             OnClientClick="return confirm('Delete this photo?');" />
                                                     </div>
@@ -529,60 +603,54 @@
 
                 </section>
 
-
+            
                 <!-- Reviews Tab -->
                 <section id="reviews" class="admin-tab-content">
                     <div class="container">
                         <h2>Member Reviews</h2>
-                        <div class="admin-panel" style="grid-template-columns: 1fr;">
-                            <div class="admin-list-section" style="grid-column: 1/-1;">
+                        <div class="admin-panel" style="grid-template-columns:1fr;">
+                            <div class="admin-list-section" style="grid-column:1/-1;">
                                 <h3>Pending &amp; Approved Reviews</h3>
                                 <div class="admin-table-container">
                                     <table class="admin-table">
                                         <thead>
                                             <tr>
-                                                <th>Member</th>
-                                                <th>Event</th>
-                                                <th>Title</th>
-                                                <th>Review</th>
-                                                <th>Rating</th>
-                                                <th>Date</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
+                                                <th>Member</th><th>Event</th><th>Title</th>
+                                                <th>Review</th><th>Rating</th><th>Date</th>
+                                                <th>Status</th><th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <asp:Repeater ID="rptAdminReviews" runat="server" OnItemCommand="rptAdminReviews_ItemCommand">
+                                            <asp:Repeater ID="rptAdminReviews" runat="server"
+                                                OnItemCommand="rptAdminReviews_ItemCommand">
                                                 <ItemTemplate>
                                                     <tr>
                                                         <td><%# Eval("UserFullName") %></td>
                                                         <td><%# Eval("EventName") %></td>
                                                         <td><%# Eval("Title") %></td>
-                                                        <td style="max-width:250px;"><%# Eval("ReviewText") %></td>
-                                                        <td><%# new string('★', Convert.ToInt32(Eval("Rating"))) %></td>
+                                                        <td style="max-width:240px;word-wrap:break-word;"><%# Eval("ReviewText") %></td>
+                                                        <td style="color:#FFB300;"><%# new string('\u2605', Convert.ToInt32(Eval("Rating"))) %></td>
                                                         <td><%# Eval("ReviewDate", "{0:MMM dd, yyyy}") %></td>
+                                                        <td><%# Convert.ToBoolean(Eval("IsApproved"))
+                                                            ? "<span style='color:#4caf50;font-weight:bold;'>Approved</span>"
+                                                            : "<span style='color:orange;font-weight:bold;'>Pending</span>" %></td>
                                                         <td>
-                                                            <%# Convert.ToBoolean(Eval("IsApproved"))
-                                                                ? "<span style='color:#4caf50; font-weight:bold;'>Approved</span>"
-                                                                : "<span style='color:orange; font-weight:bold;'>Pending</span>" %>
-                                                        </td>
-                                                        <td class="admin-item-actions">
                                                             <asp:Button ID="btnApproveReview" runat="server"
                                                                 CommandName="Approve"
                                                                 CommandArgument='<%# Eval("ReviewID") %>'
                                                                 Text="Approve" CssClass="btn btn-success btn-sm"
                                                                 Visible='<%# !Convert.ToBoolean(Eval("IsApproved")) %>' />
-                                                            <asp:Button ID="btnRejectReview" runat="server"
+                                                            <asp:Button ID="btnUnapproveReview" runat="server"
                                                                 CommandName="Reject"
                                                                 CommandArgument='<%# Eval("ReviewID") %>'
-                                                                Text="Reject" CssClass="btn btn-danger btn-sm"
+                                                                Text="Unapprove" CssClass="btn btn-sm"
+                                                                style="background:#e65100;color:white;"
                                                                 Visible='<%# Convert.ToBoolean(Eval("IsApproved")) %>'
-                                                                OnClientClick="return confirm('Remove approval for this review?');" />
+                                                                OnClientClick="return confirm('Remove this review from public view?');" />
                                                             <asp:Button ID="btnDeleteReview" runat="server"
                                                                 CommandName="Delete"
                                                                 CommandArgument='<%# Eval("ReviewID") %>'
-                                                                Text="Delete" CssClass="btn btn-sm"
-                                                                style="background-color:#d32f2f; color:white;"
+                                                                Text="Delete" CssClass="btn btn-danger btn-sm"
                                                                 OnClientClick="return confirm('Permanently delete this review?');" />
                                                         </td>
                                                     </tr>
@@ -591,7 +659,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <asp:Label ID="lblNoReviews" runat="server" CssClass="no-items"
+                                <asp:Label ID="lblNoAdminReviews" runat="server" CssClass="no-items"
                                     Text="No reviews submitted yet." Visible="false"></asp:Label>
                             </div>
                         </div>
@@ -601,6 +669,8 @@
             </asp:Panel>
 
         </main>
+
+        <asp:HiddenField ID="hdnActiveAdminTab" runat="server" Value="overview" ClientIDMode="Static" />
 
         <script src="JS/admin.js"></script>
 

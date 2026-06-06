@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true"
+﻿<%@ Page Language="C#" AutoEventWireup="true"
     MasterPageFile="~/MasterPages/Site.master"
     CodeBehind="About.aspx.cs"
     Inherits="AdventureHorizonsBD.About" %>
@@ -161,18 +161,16 @@
                         <ItemTemplate>
                             <article class="testimonial-card">
                                 <div class="stars"><%# new string('★', Convert.ToInt32(Eval("Rating"))) %><%# new string('☆', 5 - Convert.ToInt32(Eval("Rating"))) %></div>
-                                <p style="margin: 1rem 0 0.5rem; font-weight: 600; font-size: 1.1rem;">"<%# Eval("Title") %>"</p>
-                                <p style="color: var(--muted); font-size: 0.9rem; margin: 0.5rem 0;">📍 <%# Eval("EventName") %></p>
-                                <p style="margin: 1rem 0; line-height: 1.6;"><%# Eval("ReviewText") %></p>
-                                <footer class="author">— <%# Eval("UserFullName") %></footer>
+                                <p style="margin:1rem 0 0.5rem;font-weight:600;font-size:1.1rem;">"<%# Eval("Title") %>"</p>
+                                <p style="color:var(--muted);font-size:0.9rem;margin:0.5rem 0;">📍 <%# Eval("EventName") %></p>
+                                <p style="margin:1rem 0;line-height:1.6;"><%# Eval("ReviewText") %></p>
+                                <p class="author">— <%# Eval("UserFullName") %></p>
                             </article>
                         </ItemTemplate>
                     </asp:Repeater>
 
-                    <asp:Label ID="lblNoReviews" runat="server"
-                        Text="No community reviews yet. Be the first to share your experience!"
-                        CssClass="no-reviews"
-                        Visible="false">
+                    <asp:Label ID="lblNoReviews" runat="server" Visible="false">
+                        <p class="no-reviews">No community reviews yet. Be the first to share your experience!</p>
                     </asp:Label>
 
                 </div>
@@ -198,5 +196,6 @@
         </section>
 
     </main>
+
 
 </asp:Content>

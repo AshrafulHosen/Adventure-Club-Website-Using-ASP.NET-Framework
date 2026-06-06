@@ -11,44 +11,49 @@ namespace AdventureHorizonsBD
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            bool isAdmin = Session["UserID"] != null
+                        && Session["UserRole"] != null
+                        && Session["UserRole"].ToString() == "Admin";
+
+            pnlAdminLoginSection.Visible = !isAdmin;
+            pnlAdminDashboard.Visible    =  isAdmin;
+
+            if (!IsPostBack && isAdmin)
             {
-                CheckLoginStatus();
+                LoadDashboardData();
             }
+        }
+
+        // Restores panel visibility without touching any data-bound controls.
+        private void RestoreLoginState()
+        {
+            bool isAdmin = Session["UserID"] != null
+                        && Session["UserRole"] != null
+                        && Session["UserRole"].ToString() == "Admin";
+
+            pnlAdminLoginSection.Visible = !isAdmin;
+            pnlAdminDashboard.Visible    =  isAdmin;
         }
 
         private void CheckLoginStatus()
         {
-            if (Session["UserID"] != null && Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
-            {
-                pnlAdminLoginSection.Visible = false;
-                pnlAdminDashboard.Visible = true;
-                
+            RestoreLoginState();
+            if (pnlAdminDashboard.Visible)
                 LoadDashboardData();
-            }
-            else
-            {
-                pnlAdminLoginSection.Visible = true;
-                pnlAdminDashboard.Visible = false;
-            }
         }
 
         protected void btnAdminLogin_Click(object sender, EventArgs e)
         {
             lblAdminLoginMsg.Text = "";
-            string email = txtAdminEmail.Text.Trim();
-            string password = txtAdminPassword.Text;
-
             AuthBLL authBLL = new AuthBLL();
             string msg;
-            var user = authBLL.Login(email, password, out msg);
+            var user = authBLL.Login(txtAdminEmail.Text.Trim(), txtAdminPassword.Text, out msg);
 
             if (user != null && user.Role == "Admin")
             {
-                Session["UserID"] = user.UserID;
+                Session["UserID"]   = user.UserID;
                 Session["UserName"] = user.FullName;
                 Session["UserRole"] = user.Role;
-                
                 Response.Redirect("Admin.aspx");
             }
             else
@@ -66,22 +71,21 @@ namespace AdventureHorizonsBD
 
         private void LoadDashboardData()
         {
-            // Load Stats
+            // Stats
             DashboardDAL dashDAL = new DashboardDAL();
             var stats = dashDAL.GetDashboardStats();
-            
-            if(stats.Count > 0)
+            if (stats.Count > 0)
             {
-                litStatMembers.Text = stats["ApprovedMembers"].ToString();
-                litStatPending.Text = stats["PendingRequests"].ToString();
-                litStatEvents.Text = stats["TotalEvents"].ToString();
+                litStatMembers.Text  = stats["ApprovedMembers"].ToString();
+                litStatPending.Text  = stats["PendingRequests"].ToString();
+                litStatEvents.Text   = stats["TotalEvents"].ToString();
                 litStatMessages.Text = stats["UnreadMessages"].ToString();
             }
 
-            // Load Membership Requests
-            MembershipDAL memDAL = new MembershipDAL();
+            // Membership requests
+            MembershipDAL memDAL  = new MembershipDAL();
             var requests = memDAL.GetPendingRequests();
-            if(requests.Count > 0)
+            if (requests.Count > 0)
             {
                 rptMembershipRequests.DataSource = requests;
                 rptMembershipRequests.DataBind();
@@ -94,23 +98,23 @@ namespace AdventureHorizonsBD
                 rowNoRequests.Visible = true;
             }
 
-            // Load Approved Members
+            // Approved members
             UserDAL userDAL = new UserDAL();
             var approvedMembers = userDAL.GetApprovedMembers();
-            if(approvedMembers.Count > 0)
+            if (approvedMembers.Count > 0)
             {
                 rptApprovedMembers.DataSource = approvedMembers;
                 rptApprovedMembers.DataBind();
-                rptApprovedMembers.Visible = true;
-                lblNoApprovedMembers.Visible = false;
+                rptApprovedMembers.Visible    = true;
+                lblNoApprovedMembers.Visible  = false;
             }
             else
             {
-                rptApprovedMembers.Visible = false;
+                rptApprovedMembers.Visible   = false;
                 lblNoApprovedMembers.Visible = true;
             }
 
-            // Load Events
+            // Events
             EventDAL eventDAL = new EventDAL();
             var events = eventDAL.GetAllEvents();
             if (events.Count > 0)
@@ -118,15 +122,15 @@ namespace AdventureHorizonsBD
                 rptAdminEvents.DataSource = events;
                 rptAdminEvents.DataBind();
                 rptAdminEvents.Visible = true;
-                lblNoEvents.Visible = false;
+                lblNoEvents.Visible    = false;
             }
             else
             {
                 rptAdminEvents.Visible = false;
-                lblNoEvents.Visible = true;
+                lblNoEvents.Visible    = true;
             }
 
-            // Load Gallery
+            // Gallery
             GalleryDAL galleryDAL = new GalleryDAL();
             var images = galleryDAL.GetAllImages();
             if (images.Count > 0)
@@ -134,99 +138,152 @@ namespace AdventureHorizonsBD
                 rptAdminGallery.DataSource = images;
                 rptAdminGallery.DataBind();
                 rptAdminGallery.Visible = true;
-                lblNoGallery.Visible = false;
+                lblNoGallery.Visible    = false;
             }
             else
             {
                 rptAdminGallery.Visible = false;
-                lblNoGallery.Visible = true;
+                lblNoGallery.Visible    = true;
             }
 
-            // Load Contact Messages
+            // Contact messages
             ContactDAL contactDAL = new ContactDAL();
             var msgs = contactDAL.GetAllMessages();
             rptContactMessages.DataSource = msgs;
             rptContactMessages.DataBind();
 
-            // Load Bookings
+            // Bookings
             var bookings = eventDAL.GetAllRegistrations();
-            if(bookings.Count > 0)
+            if (bookings.Count > 0)
             {
                 rptAdminBookings.DataSource = bookings;
                 rptAdminBookings.DataBind();
                 rptAdminBookings.Visible = true;
-                lblNoBookings2.Visible = false;
+                lblNoBookings2.Visible   = false;
             }
             else
             {
                 rptAdminBookings.Visible = false;
-                lblNoBookings2.Visible = true;
+                lblNoBookings2.Visible   = true;
             }
 
-            // Load Reviews
+            // Reviews
             ReviewDAL reviewDAL = new ReviewDAL();
             var reviews = reviewDAL.GetAllReviews();
             if (reviews.Count > 0)
             {
                 rptAdminReviews.DataSource = reviews;
                 rptAdminReviews.DataBind();
-                rptAdminReviews.Visible = true;
-                lblNoReviews.Visible = false;
+                rptAdminReviews.Visible  = true;
+                lblNoAdminReviews.Visible = false;
             }
             else
             {
-                rptAdminReviews.Visible = false;
-                lblNoReviews.Visible = true;
+                rptAdminReviews.Visible  = false;
+                lblNoAdminReviews.Visible = true;
             }
         }
+
+        // ── Events ───────────────────────────────────────────────────────────
 
         protected void btnAdminAddEvent_Click(object sender, EventArgs e)
         {
             lblAdminEventMsg.Text = "";
             try
             {
-                EventModel evt = new EventModel
+                var evt = new EventModel
                 {
-                    Title = txtAdminEventTitle.Text.Trim(),
-                    EventDate = txtAdminEventDate.Text.Trim(),
+                    Title         = txtAdminEventTitle.Text.Trim(),
+                    EventDate     = txtAdminEventDate.Text.Trim(),
                     EventDuration = txtAdminEventDuration.Text.Trim(),
-                    Region = txtAdminEventRegion.Text.Trim(),
-                    Description = txtAdminEventDescription.Text.Trim()
+                    Region        = txtAdminEventRegion.Text.Trim(),
+                    Description   = txtAdminEventDescription.Text.Trim()
                 };
-
-                EventDAL eventDAL = new EventDAL();
-                eventDAL.AddEvent(evt);
+                new EventDAL().AddEvent(evt);
 
                 lblAdminEventMsg.ForeColor = System.Drawing.Color.Green;
-                lblAdminEventMsg.Text = "Event added successfully!";
-
-                // Clear form
-                txtAdminEventTitle.Text = "";
-                txtAdminEventDate.Text = "";
-                txtAdminEventDuration.Text = "";
-                txtAdminEventRegion.Text = "";
-                txtAdminEventDescription.Text = "";
-
+                lblAdminEventMsg.Text      = "Event added successfully!";
+                txtAdminEventTitle.Text = txtAdminEventDate.Text =
+                    txtAdminEventDuration.Text = txtAdminEventRegion.Text =
+                    txtAdminEventDescription.Text = "";
                 LoadDashboardData();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 lblAdminEventMsg.ForeColor = System.Drawing.Color.Red;
-                lblAdminEventMsg.Text = "Error adding event: " + ex.Message;
+                lblAdminEventMsg.Text      = "Error adding event: " + ex.Message;
             }
         }
 
         protected void rptAdminEvents_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
+            int eventId = Convert.ToInt32(e.CommandArgument);
+            EventDAL eventDAL = new EventDAL();
+
             if (e.CommandName == "Delete")
             {
-                int eventId = Convert.ToInt32(e.CommandArgument);
-                EventDAL eventDAL = new EventDAL();
                 eventDAL.DeleteEvent(eventId);
-
+                pnlEditEvent.Visible = false;
                 LoadDashboardData();
             }
+            else if (e.CommandName == "EditEvent")
+            {
+                // Load the data first so the edit panel is populated,
+                // then show the panel (order matters for visibility).
+                EventModel evt = eventDAL.GetEventById(eventId);
+                if (evt != null)
+                {
+                    hdnEditEventID.Value         = eventId.ToString();
+                    txtEditEventTitle.Text       = evt.Title;
+                    txtEditEventDate.Text        = evt.EventDate;
+                    txtEditEventDuration.Text    = evt.EventDuration;
+                    txtEditEventRegion.Text      = evt.Region;
+                    txtEditEventDescription.Text = evt.Description;
+                    lblEditEventMsg.Text         = "";
+                    pnlEditEvent.Visible         = true;
+                    hdnActiveAdminTab.Value = "events";
+
+                    // Refresh the repeater list AFTER setting the panel visible
+                    // so the list is up-to-date but the edit form stays open.
+                    LoadDashboardData();
+                }
+            }
         }
+
+        protected void btnSaveEvent_Click(object sender, EventArgs e)
+        {
+            lblEditEventMsg.Text = "";
+            try
+            {
+                new EventDAL().UpdateEvent(new EventModel
+                {
+                    EventID       = Convert.ToInt32(hdnEditEventID.Value),
+                    Title         = txtEditEventTitle.Text.Trim(),
+                    EventDate     = txtEditEventDate.Text.Trim(),
+                    EventDuration = txtEditEventDuration.Text.Trim(),
+                    Region        = txtEditEventRegion.Text.Trim(),
+                    Description   = txtEditEventDescription.Text.Trim()
+                });
+
+                lblAdminEventMsg.ForeColor = System.Drawing.Color.Green;
+                lblAdminEventMsg.Text      = "Event updated successfully!";
+                pnlEditEvent.Visible       = false;
+                LoadDashboardData();
+            }
+            catch (Exception ex)
+            {
+                lblEditEventMsg.ForeColor = System.Drawing.Color.Red;
+                lblEditEventMsg.Text      = "Error saving event: " + ex.Message;
+            }
+        }
+
+        protected void btnCancelEditEvent_Click(object sender, EventArgs e)
+        {
+            pnlEditEvent.Visible = false;
+            LoadDashboardData();
+        }
+
+        // ── Gallery ──────────────────────────────────────────────────────────
 
         protected void btnAdminAddPhoto_Click(object sender, EventArgs e)
         {
@@ -234,145 +291,176 @@ namespace AdventureHorizonsBD
             try
             {
                 string imageUrl = "";
-
-                // Check which upload method is being used
                 if (fileAdminPhoto.HasFile)
                 {
-                    string filename = Path.GetFileName(fileAdminPhoto.FileName);
-                    string uniqueFilename = Guid.NewGuid().ToString() + "_" + filename;
-                    string savePath = Server.MapPath("~/images/gallery/") + uniqueFilename;
-                    
-                    // Ensure directory exists
                     string dir = Server.MapPath("~/images/gallery/");
-                    if (!Directory.Exists(dir))
-                    {
-                        Directory.CreateDirectory(dir);
-                    }
-                    
-                    fileAdminPhoto.SaveAs(savePath);
-                    imageUrl = "images/gallery/" + uniqueFilename;
+                    if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                    string unique = Guid.NewGuid() + "_" + Path.GetFileName(fileAdminPhoto.FileName);
+                    fileAdminPhoto.SaveAs(dir + unique);
+                    imageUrl = "images/gallery/" + unique;
                 }
-                else if (!string.IsNullOrEmpty(txtAdminPhotoUrl.Text.Trim()))
+                else if (!string.IsNullOrWhiteSpace(txtAdminPhotoUrl.Text))
                 {
                     imageUrl = txtAdminPhotoUrl.Text.Trim();
                 }
                 else
                 {
                     lblAdminGalleryMsg.ForeColor = System.Drawing.Color.Red;
-                    lblAdminGalleryMsg.Text = "Please either upload a file or provide an image URL.";
+                    lblAdminGalleryMsg.Text      = "Please upload a file or provide an image URL.";
                     return;
                 }
 
-                GalleryModel model = new GalleryModel
+                new GalleryDAL().AddImage(new GalleryModel
                 {
-                    Title = txtAdminPhotoTitle.Text.Trim(),
-                    Description = txtAdminPhotoDescription.Text.Trim(),
-                    ImageURL = imageUrl,
+                    Title            = txtAdminPhotoTitle.Text.Trim(),
+                    Description      = txtAdminPhotoDescription.Text.Trim(),
+                    ImageURL         = imageUrl,
                     UploadedByUserID = Convert.ToInt32(Session["UserID"]),
-                    IsApproved = true // Admin uploads are auto-approved
-                };
-
-                GalleryDAL dal = new GalleryDAL();
-                dal.AddImage(model);
+                    IsApproved       = true
+                });
 
                 lblAdminGalleryMsg.ForeColor = System.Drawing.Color.Green;
-                lblAdminGalleryMsg.Text = "Photo added successfully!";
-
-                // Clear form
-                txtAdminPhotoTitle.Text = "";
-                txtAdminPhotoUrl.Text = "";
-                txtAdminPhotoDescription.Text = "";
-
+                lblAdminGalleryMsg.Text      = "Photo added successfully!";
+                txtAdminPhotoTitle.Text = txtAdminPhotoUrl.Text = txtAdminPhotoDescription.Text = "";
                 LoadDashboardData();
             }
             catch (Exception ex)
             {
                 lblAdminGalleryMsg.ForeColor = System.Drawing.Color.Red;
-                lblAdminGalleryMsg.Text = "Error uploading photo: " + ex.Message;
+                lblAdminGalleryMsg.Text      = "Error uploading photo: " + ex.Message;
             }
         }
+
+        protected void rptAdminGallery_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            int imageId = Convert.ToInt32(e.CommandArgument);
+            GalleryDAL galleryDAL = new GalleryDAL();
+
+            if (e.CommandName == "Approve")
+            {
+                galleryDAL.ApproveImage(imageId);
+                pnlEditImage.Visible = false;
+                LoadDashboardData();
+            }
+            else if (e.CommandName == "Delete")
+            {
+                galleryDAL.DeleteImage(imageId);
+                pnlEditImage.Visible = false;
+                LoadDashboardData();
+            }
+            else if (e.CommandName == "EditImage")
+            {
+                GalleryModel img = galleryDAL.GetImageById(imageId);
+                if (img != null)
+                {
+                    hdnEditImageID.Value         = imageId.ToString();
+                    hdnEditImageURL.Value        = img.ImageURL;          // keep current URL
+                    txtEditImageTitle.Text       = img.Title;
+                    txtEditImageDescription.Text = img.Description;
+                    imgEditPreview.ImageUrl      = "~/" + img.ImageURL;   // show current photo
+                    imgEditPreview.Visible       = !string.IsNullOrEmpty(img.ImageURL);
+                    lblEditImageMsg.Text         = "";
+                    pnlEditImage.Visible         = true;
+
+                    // Refresh list AFTER setting panel visible
+                    LoadDashboardData();
+                }
+            }
+        }
+
+        protected void btnSaveImage_Click(object sender, EventArgs e)
+        {
+            lblEditImageMsg.Text = "";
+            try
+            {
+                // Determine the image URL — replace only if a new file was uploaded
+                string imageUrl = hdnEditImageURL.Value;  // keep existing by default
+
+                if (fileEditPhoto.HasFile)
+                {
+                    string ext = System.IO.Path.GetExtension(fileEditPhoto.FileName).ToLower();
+                    if (ext != ".jpg" && ext != ".jpeg" && ext != ".png" && ext != ".gif" && ext != ".webp")
+                    {
+                        lblEditImageMsg.ForeColor = System.Drawing.Color.Red;
+                        lblEditImageMsg.Text      = "Only image files (jpg, jpeg, png, gif, webp) are allowed.";
+                        return;
+                    }
+
+                    string dir = Server.MapPath("~/images/gallery/");
+                    if (!System.IO.Directory.Exists(dir)) System.IO.Directory.CreateDirectory(dir);
+                    string unique = Guid.NewGuid() + "_" + System.IO.Path.GetFileName(fileEditPhoto.FileName);
+                    fileEditPhoto.SaveAs(System.IO.Path.Combine(dir, unique));
+                    imageUrl = "images/gallery/" + unique;
+                }
+
+                new GalleryDAL().UpdateImage(new GalleryModel
+                {
+                    ImageID     = Convert.ToInt32(hdnEditImageID.Value),
+                    Title       = txtEditImageTitle.Text.Trim(),
+                    Description = txtEditImageDescription.Text.Trim(),
+                    ImageURL    = imageUrl   // existing URL kept unless new file uploaded
+                });
+
+                lblAdminGalleryMsg.ForeColor = System.Drawing.Color.Green;
+                lblAdminGalleryMsg.Text      = "Photo updated successfully!";
+                pnlEditImage.Visible         = false;
+                LoadDashboardData();
+            }
+            catch (Exception ex)
+            {
+                lblEditImageMsg.ForeColor = System.Drawing.Color.Red;
+                lblEditImageMsg.Text      = "Error saving photo: " + ex.Message;
+            }
+        }
+
+        protected void btnCancelEditImage_Click(object sender, EventArgs e)
+        {
+            pnlEditImage.Visible = false;
+            LoadDashboardData();
+        }
+
+        // ── Membership ───────────────────────────────────────────────────────
 
         protected void rptMembershipRequests_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             int requestId = Convert.ToInt32(e.CommandArgument);
             MembershipBLL memBLL = new MembershipBLL();
-            
-            if (e.CommandName == "Approve")
-            {
-                memBLL.ApproveRequest(requestId, out _);
-            }
-            else if (e.CommandName == "Reject")
-            {
-                memBLL.RejectRequest(requestId, out _);
-            }
-            
-            LoadDashboardData(); // Refresh data
+            if (e.CommandName == "Approve") memBLL.ApproveRequest(requestId, out _);
+            else if (e.CommandName == "Reject") memBLL.RejectRequest(requestId, out _);
+            LoadDashboardData();
         }
+
+        // ── Messages ─────────────────────────────────────────────────────────
 
         protected void rptContactMessages_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             if (e.CommandName == "MarkRead")
             {
-                int messageId = Convert.ToInt32(e.CommandArgument);
-                ContactDAL contactDAL = new ContactDAL();
-                contactDAL.MarkAsRead(messageId);
-                
+                new ContactDAL().MarkAsRead(Convert.ToInt32(e.CommandArgument));
                 LoadDashboardData();
             }
         }
-        
-        protected void rptAdminGallery_ItemCommand(object source, RepeaterCommandEventArgs e)
-        {
-            int imageId = Convert.ToInt32(e.CommandArgument);
-            GalleryDAL galleryDAL = new GalleryDAL();
-            
-            if(e.CommandName == "Approve")
-            {
-                galleryDAL.ApproveImage(imageId);
-            }
-            else if(e.CommandName == "Delete")
-            {
-                galleryDAL.DeleteImage(imageId);
-            }
-            
-            LoadDashboardData();
-        }
+
+        // ── Bookings ─────────────────────────────────────────────────────────
 
         protected void rptAdminBookings_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             int regId = Convert.ToInt32(e.CommandArgument);
             EventDAL eventDAL = new EventDAL();
-
-            if (e.CommandName == "Approve")
-            {
-                eventDAL.UpdateRegistrationStatus(regId, "Approved");
-            }
-            else if (e.CommandName == "Reject")
-            {
-                eventDAL.UpdateRegistrationStatus(regId, "Rejected");
-            }
-
+            if (e.CommandName == "Approve")      eventDAL.UpdateRegistrationStatus(regId, "Approved");
+            else if (e.CommandName == "Reject")  eventDAL.UpdateRegistrationStatus(regId, "Rejected");
             LoadDashboardData();
         }
- 
+
+        // ── Reviews ──────────────────────────────────────────────────────────
+
         protected void rptAdminReviews_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             int reviewId = Convert.ToInt32(e.CommandArgument);
             ReviewDAL reviewDAL = new ReviewDAL();
-
-            if (e.CommandName == "Approve")
-            {
-                reviewDAL.UpdateReviewStatus(reviewId, true);
-            }
-            else if (e.CommandName == "Reject")
-            {
-                reviewDAL.UpdateReviewStatus(reviewId, false);
-            }
-            else if (e.CommandName == "Delete")
-            {
-                reviewDAL.DeleteReview(reviewId);
-            }
-
+            if (e.CommandName == "Approve")      reviewDAL.UpdateReviewStatus(reviewId, true);
+            else if (e.CommandName == "Reject")  reviewDAL.UpdateReviewStatus(reviewId, false);
+            else if (e.CommandName == "Delete")  reviewDAL.DeleteReview(reviewId);
             LoadDashboardData();
         }
     }

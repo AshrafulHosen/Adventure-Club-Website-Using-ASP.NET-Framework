@@ -15,20 +15,18 @@ namespace AdventureHorizonsBD
 
         private void LoadApprovedReviews()
         {
-            ReviewDAL reviewDAL = new ReviewDAL();
-            var reviews = reviewDAL.GetApprovedReviews();
-
+            var reviews = new ReviewDAL().GetApprovedReviews();
             if (reviews.Count > 0)
             {
                 rptCommunityReviews.DataSource = reviews;
                 rptCommunityReviews.DataBind();
                 rptCommunityReviews.Visible = true;
-                lblNoReviews.Visible = false;
+                lblNoReviews.Visible        = false;
             }
             else
             {
                 rptCommunityReviews.Visible = false;
-                lblNoReviews.Visible = true;
+                lblNoReviews.Visible        = true;
             }
         }
     }

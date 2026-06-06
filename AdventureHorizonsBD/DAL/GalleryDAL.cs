@@ -149,5 +149,51 @@ namespace AdventureHorizonsBD.DAL
             }
             return images;
         }
+
+        public GalleryModel GetImageById(int imageId)
+        {
+            using (SqlConnection conn = DatabaseHelper.GetConnection())
+            {
+                string sql = "SELECT * FROM Gallery WHERE ImageID = @ImageID";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@ImageID", imageId);
+                conn.Open();
+                using (SqlDataReader r = cmd.ExecuteReader())
+                {
+                    if (r.Read())
+                        return new GalleryModel
+                        {
+                            ImageID     = Convert.ToInt32(r["ImageID"]),
+                            Title       = r["Title"].ToString(),
+                            ImageURL    = r["ImageURL"].ToString(),
+                            Description = r["Description"] != DBNull.Value ? r["Description"].ToString() : "",
+                            IsApproved  = Convert.ToBoolean(r["IsApproved"])
+                        };
+                }
+            }
+            return null;
+        }
+
+        public void UpdateImage(GalleryModel img)
+        {
+            using (SqlConnection conn = DatabaseHelper.GetConnection())
+            {
+                // Only update ImageURL when a new one is provided
+                string sql = string.IsNullOrEmpty(img.ImageURL)
+                    ? "UPDATE Gallery SET Title=@Title, Description=@Description WHERE ImageID=@ImageID"
+                    : "UPDATE Gallery SET Title=@Title, Description=@Description, ImageURL=@ImageURL WHERE ImageID=@ImageID";
+
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Title",       img.Title);
+                cmd.Parameters.AddWithValue("@Description", (object)img.Description ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ImageID",     img.ImageID);
+                if (!string.IsNullOrEmpty(img.ImageURL))
+                    cmd.Parameters.AddWithValue("@ImageURL", img.ImageURL);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
     }
 }

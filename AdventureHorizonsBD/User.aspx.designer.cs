@@ -34,5 +34,8 @@ namespace AdventureHorizonsBD {
         
         protected global::System.Web.UI.WebControls.Repeater rptUserReviews;
         protected global::System.Web.UI.WebControls.Label lblNoReviews;
+
+        // Tab state
+        protected global::System.Web.UI.WebControls.HiddenField hdnActiveUserTab;
     }
 }
