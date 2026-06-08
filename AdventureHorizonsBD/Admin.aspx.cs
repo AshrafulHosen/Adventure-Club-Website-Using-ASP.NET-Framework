@@ -242,6 +242,7 @@ namespace AdventureHorizonsBD
                     lblEditEventMsg.Text         = "";
                     pnlEditEvent.Visible         = true;
                     hdnActiveAdminTab.Value = "events";
+                    Page.ClientScript.RegisterStartupScript(this.GetType(), "eventsTab", "switchAdminTab('events');", true);
 
                     // Refresh the repeater list AFTER setting the panel visible
                     // so the list is up-to-date but the edit form stays open.
@@ -363,7 +364,9 @@ namespace AdventureHorizonsBD
                     pnlEditImage.Visible         = true;
 
                     // Refresh list AFTER setting panel visible
+                    hdnActiveAdminTab.Value = "gallery";
                     LoadDashboardData();
+                    Page.ClientScript.RegisterStartupScript(this.GetType(), "galleryTab", "switchAdminTab('gallery');", true);
                 }
             }
         }

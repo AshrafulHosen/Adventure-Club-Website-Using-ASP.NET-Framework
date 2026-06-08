@@ -43,9 +43,9 @@ function switchUploadMethod(method) {
 }
 
 // Restore active tab on page load (after postback). Runs after DOM is ready.
-(function restoreTab() {
+document.addEventListener('DOMContentLoaded', function () {
     var hdn = document.getElementById('hdnActiveAdminTab');
     var tab = hdn ? hdn.value : 'overview';
     if (!tab) tab = 'overview';
     switchAdminTab(tab);
-})();
+});
